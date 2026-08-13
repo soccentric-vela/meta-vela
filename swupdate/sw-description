@@ -1,0 +1,55 @@
+software =
+{
+    version = "@@VERSION@@";
+    hardware-compatibility =["1.0"];
+    signing = "RSA";
+
+/*
+ * Qualcomm Snapdragon QCS6490 (RB3 Gen 2) — A/B rootfs OTA update
+ *
+ * Workflow:
+ *   1. pre-install.sh  identifies the inactive slot, creates
+ *      /dev/swupdate-inactive symlink, and backs up the current kernel
+ *      and DTB to *.prev for rollback.
+ *   2. The "raw" handler streams rootfs.ext4.gz → inactive slot.
+ *   3. The kernel (boot.img/Image) and DTB are written to /boot/.
+ *   4. post-install.sh updates the boot config to point at the new slot,
+ *      writes /boot/boot_state (tries_remaining=3, confirmed=false),
+ *      and backs up the boot config for rollback.
+ *   5. SWUpdate triggers `reboot` via postupdatecmd.
+ *   On next boot: boot-watchdog.sh decrements tries_remaining.
+ *   After apps are healthy: swupdate-bootcheck.sh writes confirmed=true.
+ */
+
+images: (
+    {
+        filename   = "rootfs.ext4.gz";
+        type       = "raw";
+        device     = "/dev/swupdate-inactive";
+        compressed = "zlib";
+    },
+    {
+        filename = "@@KERNEL@@";
+        type     = "rawfile";
+        path     = "/boot/@@KERNEL@@";
+    },
+    {
+        filename = "@@DTB@@";
+        type     = "rawfile";
+        path     = "/boot/@@DTB@@";
+    }
+);
+
+scripts: (
+    {
+        filename = "pre-install.sh";
+        type     = "shellscript";
+        data     = "preinst";
+    },
+    {
+        filename = "post-install.sh";
+        type     = "shellscript";
+        data     = "postinst";
+    }
+);
+};

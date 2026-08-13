@@ -1,0 +1,27 @@
+diff --git a/protos/CMakeLists.txt b/protos/CMakeLists.txt
+index b98337e..61b87ea 100644
+--- a/protos/CMakeLists.txt
++++ b/protos/CMakeLists.txt
+@@ -32,7 +32,21 @@ message(STATUS "[hal_protos] gRPC ${gRPC_VERSION} via CMake config")
+ 
+ set(HAL_GRPC_LIBRARIES gRPC::grpc++ gRPC::grpc)
+ 
+-get_target_property(GRPC_CPP_PLUGIN gRPC::grpc_cpp_plugin LOCATION)
++if(TARGET gRPC::grpc_cpp_plugin)
++  get_target_property(GRPC_CPP_PLUGIN gRPC::grpc_cpp_plugin LOCATION)
++else()
++  # meta-oe's gRPC CMake config only exports the grpc_cpp_plugin target when
++  # NOT cross-compiling (gRPCConfig.cmake guards gRPCPluginTargets.cmake with
++  # `if(NOT CMAKE_CROSSCOMPILING)`).  Under Yocto we ARE cross-compiling, so
++  # the target is absent even though the plugin exists in the native sysroot.
++  # Fall back to the GRPC_CPP_PLUGIN cache variable (set by the Yocto recipe
++  # to ${STAGING_BINDIR_NATIVE}/grpc_cpp_plugin), or find_program().
++  if(GRPC_CPP_PLUGIN)
++    message(STATUS "[hal_protos] grpc_cpp_plugin (cache): ${GRPC_CPP_PLUGIN}")
++  else()
++    find_program(GRPC_CPP_PLUGIN grpc_cpp_plugin)
++  endif()
++endif()
+ else()
+ find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GRPCPP REQUIRED grpc++)
