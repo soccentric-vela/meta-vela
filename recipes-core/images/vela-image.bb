@@ -1,7 +1,7 @@
 SUMMARY = "Vela OS — production image for Qualcomm Snapdragon QCS6490"
 DESCRIPTION = "Full image with A/B OTA, gRPC/Protobuf, Vela-HAL, hardware \
 interface tooling, and connectivity."
-HOMEPAGE = "https://github.com/SiliconCentric/Vela-OS"
+HOMEPAGE = "https://github.com/soccentric-vela/Vela-OS"
 LICENSE = "MIT"
 
 require recipes-extended/images/core-image-full-cmdline.bb
