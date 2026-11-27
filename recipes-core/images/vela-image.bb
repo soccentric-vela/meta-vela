@@ -14,7 +14,7 @@ IMAGE_FEATURES += "ssh-server-openssh"
 # meta-qcom master).  The qcom-armv8a machine also supports the RB3 Gen 2
 # and provides systemd-boot/EFI (qcom-common.inc), so the swupdate A/B OTA
 # runtime is enabled here.
-IMAGE_INSTALL:append:qcom-armv8a = " swupdate swupdate-www vela-swupdate-config"
+IMAGE_INSTALL:append:qcom-armv8a = " swupdate vela-swupdate-config"
 
 # Home partition init (persistent /home on the data partition)
 IMAGE_INSTALL:append = " vela-data-init"
